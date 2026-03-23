@@ -22,6 +22,7 @@ dev = [
 
 [project.scripts]
 fuel = "fuel_watcher.cli:cli"
+app = "api.index:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
