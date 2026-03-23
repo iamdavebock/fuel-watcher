@@ -1,0 +1,15 @@
+{
+  "terminal.integrated.defaultProfile.linux": "Claude — fuel-watcher",
+  "terminal.integrated.profiles.linux": {
+    "Claude — fuel-watcher": {
+      "path": "bash",
+      "args": ["-c", "ember-session attach fuel-watcher"],
+      "icon": "flame",
+      "color": "terminal.ansiMagenta"
+    }
+  },
+  "terminal.integrated.defaultLocation": "editor",
+  "terminal.integrated.persistentSessionReviveProcess": "never",
+  "remote.SSH.serverPickScope": "workspace",
+  "task.allowAutomaticTasks": "on"
+}
