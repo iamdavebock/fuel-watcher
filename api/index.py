@@ -34,6 +34,27 @@ TARGET_TOWNS = [
     "kingston on murray", "cadell", "moorook", "cobdogla",
 ]
 
+# Towns in drive order, Gawler → Renmark
+ROUTE_ORDER = [
+    "gawler", "roseworthy", "freeling", "kapunda",
+    "nuriootpa", "angaston", "tanunda",
+    "truro",
+    "blanchetown",
+    "waikerie", "cadell", "kingston on murray",
+    "moorook", "cobdogla", "barmera",
+    "berri", "glossop", "monash",
+    "loxton",
+    "renmark", "paringa",
+]
+
+
+def _route_index(town: str) -> int:
+    t = town.lower()
+    for i, name in enumerate(ROUTE_ORDER):
+        if name in t or t in name:
+            return i
+    return len(ROUTE_ORDER)
+
 # Keys to try per fuel type in the prices dict
 FUEL_KEYS = {
     "Diesel": ["DIESEL", "DL", "dl", "diesel"],
@@ -218,8 +239,8 @@ def build_rows(station_list: list[dict]) -> tuple[list[dict], list[dict]]:
                 "address": station.get("address", ""),
             })
 
-    price_rows.sort(key=lambda r: (r["fuel_type"], r["price"]))
-    no_price_stations.sort(key=lambda r: (r["town"], r["name"]))
+    price_rows.sort(key=lambda r: (r["fuel_type"], _route_index(r["town"]), r["price"]))
+    no_price_stations.sort(key=lambda r: (_route_index(r["town"]), r["name"]))
     return price_rows, no_price_stations
 
 
@@ -233,9 +254,20 @@ def _price_table_html(rows: list[dict], fuel_type: str) -> str:
         return ""
 
     cheapest_price = min(r["price"] for r in filtered)
-    table_rows: list[str] = []
+    filtered.sort(key=lambda r: (_route_index(r["town"]), r["price"]))
+    cheapest_row = min(filtered, key=lambda r: r["price"])
 
-    for i, row in enumerate(filtered):
+    table_rows: list[str] = []
+    prev_town = None
+
+    for row in filtered:
+        # Insert town header row when town changes
+        if row["town"] != prev_town:
+            prev_town = row["town"]
+            table_rows.append(
+                f'<tr class="town-group"><td colspan="4">{escape(row["town"])}</td></tr>'
+            )
+
         is_cheapest = row["price"] == cheapest_price
         price_str = f"{row['price']:.1f}"
         updated_str = format_updated_display(row["updated_dt"])
@@ -246,19 +278,22 @@ def _price_table_html(rows: list[dict], fuel_type: str) -> str:
             row_class = "row-cheapest"
             price_html = f'<span class="price-pill price-best">{escape(price_str)}c</span>'
         else:
-            row_class = "row-alt" if i % 2 == 1 else "row-main"
+            row_class = "row-main"
             price_html = f'<span class="price-pill">{escape(price_str)}c</span>'
 
         table_rows.append(f"""
       <tr class="{row_class}">
         <td>{escape(row["name"])}{brand_span}</td>
-        <td>{escape(row["town"])}</td>
         <td class="price-cell">{price_html}</td>
         <td class="updated-cell">{escape(updated_str)}{stale_badge}</td>
       </tr>""")
 
     rows_html = "\n".join(table_rows)
-    cheapest_note = f'<p class="cheapest-note">Cheapest: <strong>{cheapest_price:.1f}c/L</strong> — {escape(filtered[0]["name"])}, {escape(filtered[0]["town"])}</p>'
+    cheapest_note = (
+        f'<p class="cheapest-note">Cheapest on route: '
+        f'<strong>{cheapest_price:.1f}c/L</strong> — '
+        f'{escape(cheapest_row["name"])}, {escape(cheapest_row["town"])}</p>'
+    )
 
     return f"""
   <section>
@@ -269,7 +304,6 @@ def _price_table_html(rows: list[dict], fuel_type: str) -> str:
         <thead>
           <tr>
             <th>Station</th>
-            <th>Town</th>
             <th>c/L</th>
             <th>Updated</th>
           </tr>
@@ -286,13 +320,14 @@ def _no_price_html(stations: list[dict]) -> str:
     if not stations:
         return ""
 
+    sorted_stations = sorted(stations, key=lambda s: (_route_index(s["town"]), s["name"]))
     station_items = "\n".join(
         '<li>'
-        f'<span class="no-price-name">{escape(s["name"])}</span>'
+        f'<span class="no-price-town">{escape(s["town"])}</span>'
+        f' — <span class="no-price-name">{escape(s["name"])}</span>'
         + (f' <span class="brand">{escape(s["brand"])}</span>' if s["brand"] else "")
-        + f' — <span class="no-price-town">{escape(s["town"])}</span>'
-        '</li>'
-        for s in stations
+        + '</li>'
+        for s in sorted_stations
     )
 
     return f"""
@@ -435,10 +470,19 @@ def render_html(price_rows: list[dict], no_price_stations: list[dict], scraped_a
     }}
     tbody tr:hover {{ background: var(--teal-glow) !important; }}
     tr.row-main     {{ background: var(--bg-alt); }}
-    tr.row-alt      {{ background: var(--bg-mid); }}
     tr.row-cheapest {{
       background: var(--bg-alt);
       border-left: 3px solid var(--teal);
+    }}
+    tr.town-group td {{
+      background: var(--bg-mid);
+      color: var(--teal);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.35rem 1rem;
+      border-top: 1px solid rgba(0,128,128,0.2);
     }}
     td {{
       padding: 0.6rem 1rem;
