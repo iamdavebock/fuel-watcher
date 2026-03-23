@@ -5,3 +5,10 @@
 __pycache__/
 node_modules/
 .DS_Store
+
+# fuel-watcher
+.cache/
+.venv/
+*.egg-info/
+dist/
+build/
