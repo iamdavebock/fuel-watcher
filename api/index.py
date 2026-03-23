@@ -7,7 +7,6 @@ from __future__ import annotations
 import sys
 from datetime import datetime, timezone, timedelta
 from html import escape
-from http.server import BaseHTTPRequestHandler
 from zoneinfo import ZoneInfo
 
 import httpx
@@ -583,27 +582,23 @@ def render_error_html(error_msg: str, scraped_at: datetime) -> str:
 
 
 # --------------------------------------------------------------------------- #
-# Vercel handler
+# Vercel WSGI entrypoint
 # --------------------------------------------------------------------------- #
 
-class handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        scraped_at = now_adelaide()
-        try:
-            station_list = fetch_stations()
-            price_rows, no_price_stations = build_rows(station_list)
-            print(f"Price rows: {len(price_rows)}, No-price stations: {len(no_price_stations)}", file=sys.stderr)
-            html = render_html(price_rows, no_price_stations, scraped_at)
-        except Exception as exc:
-            print(f"ERROR: {exc}", file=sys.stderr)
-            html = render_error_html(str(exc), scraped_at)
+def app(environ, start_response):
+    scraped_at = now_adelaide()
+    try:
+        station_list = fetch_stations()
+        price_rows, no_price_stations = build_rows(station_list)
+        print(f"Price rows: {len(price_rows)}, No-price stations: {len(no_price_stations)}", file=sys.stderr)
+        html = render_html(price_rows, no_price_stations, scraped_at)
+    except Exception as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        html = render_error_html(str(exc), scraped_at)
 
-        encoded = html.encode("utf-8")
-        self.send_response(200)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
-        self.send_header("Content-Length", str(len(encoded)))
-        self.end_headers()
-        self.wfile.write(encoded)
-
-    def log_message(self, format, *args):
-        pass  # suppress default access log
+    encoded = html.encode("utf-8")
+    start_response("200 OK", [
+        ("Content-Type", "text/html; charset=utf-8"),
+        ("Content-Length", str(len(encoded))),
+    ])
+    return [encoded]
