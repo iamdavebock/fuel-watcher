@@ -287,9 +287,11 @@ def _no_price_html(stations: list[dict]) -> str:
         return ""
 
     station_items = "\n".join(
-        f'<li><span class="no-price-name">{escape(s["name"])}</span>'
-        f'{f" <span class=\'brand\'>{escape(s[\"brand\"])}</span>" if s["brand"] else ""}'
-        f' — <span class="no-price-town">{escape(s["town"])}</span></li>'
+        '<li>'
+        f'<span class="no-price-name">{escape(s["name"])}</span>'
+        + (f' <span class="brand">{escape(s["brand"])}</span>' if s["brand"] else "")
+        + f' — <span class="no-price-town">{escape(s["town"])}</span>'
+        '</li>'
         for s in stations
     )
 
