@@ -1,39 +1,37 @@
 # fuel-watcher — Session State
 
 ## Last Session
-- **Date:** 2026-03-23
-- **Status:** CLI built and verified working
+- **Date:** 2026-03-24
+- **Status:** Live at fuel.davebock.au — multi-source static site with 2-hour VM cron
 
 ## Completed
-- Project scaffold created (Ember init)
-- Full Python CLI implemented with click + rich + httpx
-  - `fuel check` — price table, cheapest highlighted green
-  - `fuel watch` — polling with up/down diff indicators
-  - `fuel history` — braille sparkline + min/max/avg panel
-  - `fuel stations` — station list with IDs
-- Graceful auth error handling (no token, invalid token, rate limit)
-- 6-hour local station cache in `.cache/`
-- `--refresh` flag on check/stations to bust cache
-- venv at `.venv/`, installed with `pip install -e ".[dev]"`
-- `fuel --help` confirmed working
-- No-token error message confirmed displaying correctly
+- Strategy pivot: fuelprice.io abandoned (token never obtained) → PetrolSpy + FuelSnoop scraping
+- Vercel serverless Python abandoned (PetrolSpy geo-blocks Vercel IPs) → static HTML served from `public/`
+- VM cron fetches data every 2 hours → generates `public/index.html` → git push → Vercel auto-deploys
+- Two sources: `scrape/sources/petrolspy.py`, `scrape/sources/fuelsnoop.py`
+- Source rotation: `.scraper_state.json` (gitignored) ensures no consecutive hits to same source
+- `run_scraper.py` orchestrator: picks source, generates HTML, commits and pushes
+- `run_scraper.sh` cron wrapper with venv activation
+- Page layout: Diesel table → Premium Diesel table → Red "No Price" section (out of stock / unreported)
+- Stations grouped geographically in drive order: Gawler → Renmark
+- Cheapest station highlighted, town group headers, staleness indicators
+- Cron: `0 */2 * * *` installed for user `claude`
+- Git credentials configured for headless push (`~/.git-credentials`)
+- GitHub: `iamdavebock/fuel-watcher` → linked to Vercel project `prj_sKnfOdch5WDYAR77AnMXPL8JznZX`
+- DNS: `fuel.davebock.au` CNAME → `cname.vercel-dns.com`
 
 ## In Progress
-- Awaiting API token registration at https://fuelprice.io/api/
+- Nothing — site is live and auto-updating
 
-## Next Steps (priority order)
-1. Register at fuelprice.io/api/ and add token to `.env`
-2. Run `fuel stations` to verify Renmark station list
-3. Run `fuel check` to see current prices
-4. Optionally run `fuel watch` in lead-up to Thursday 2026-03-27 trip
-
-## Notes
-- Availability: SA law requires stations to report unavailability within 30 min. Currently inferred from null price — need token to confirm if FuelPrice.io exposes an explicit `available` field. Easy to wire in once verified.
-- Dave is heading to Renmark (Riverland) Thursday 2026-03-27 — primary use case for this tool.
+## Next Steps
+1. Verify site looks correct before Thursday trip (2026-03-27)
+2. Manual refresh if needed: `cd /mnt/agents/projects/fuel-watcher && source .venv/bin/activate && python run_scraper.py`
+3. Decommission after trip (expires 2026-03-30)
 
 ## Blockers
-- Need API token before any live data can be fetched
+- None
 
 ## Access
-- CLI: `/mnt/agents/projects/fuel-watcher/.venv/bin/fuel`
-- Register: https://fuelprice.io/api/
+- Live site: https://fuel.davebock.au
+- Cron log: `/tmp/fuel-watcher-cron.log`
+- State file: `/mnt/agents/projects/fuel-watcher/.scraper_state.json`
