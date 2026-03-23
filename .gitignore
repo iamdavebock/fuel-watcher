@@ -12,3 +12,5 @@ node_modules/
 *.egg-info/
 dist/
 build/
+.vercel
+.scraper_state.json
