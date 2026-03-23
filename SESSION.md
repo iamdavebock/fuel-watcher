@@ -27,6 +27,10 @@
 3. Run `fuel check` to see current prices
 4. Optionally run `fuel watch` in lead-up to Thursday 2026-03-27 trip
 
+## Notes
+- Availability: SA law requires stations to report unavailability within 30 min. Currently inferred from null price — need token to confirm if FuelPrice.io exposes an explicit `available` field. Easy to wire in once verified.
+- Dave is heading to Renmark (Riverland) Thursday 2026-03-27 — primary use case for this tool.
+
 ## Blockers
 - Need API token before any live data can be fetched
 
