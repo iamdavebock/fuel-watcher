@@ -99,6 +99,7 @@ def render_html(
     source_name: str,
 ) -> str:
     timestamp_str = format_timestamp(scraped_at)
+    scraped_iso = scraped_at.isoformat()
     diesel_html = _price_table_html(price_rows, "Diesel")
     no_price_section = _no_price_html(no_price_stations)
 
@@ -171,7 +172,7 @@ def render_html(
       <h1>SA Diesel Prices</h1>
       <div class="subtitle">Gawler &rarr; Renmark &middot; Riverland corridor</div>
       <div class="meta">
-        <span>Updated: {escape(timestamp_str)}</span>
+        <span>Scraped: {escape(timestamp_str)} &middot; <span id="time-ago"></span></span>
         <span class="badge-source">Data: {escape(source_name)}</span>
       </div>
     </header>
@@ -180,6 +181,19 @@ def render_html(
       <div>fuel.davebock.au &middot; Prices sourced from community reports. Verify at the bowser.</div>
     </footer>
   </div>
+  <script>
+    var scraped = new Date("{scraped_iso}");
+    function ago() {{
+      var diff = Math.floor((Date.now() - scraped) / 1000);
+      var s;
+      if (diff < 60) s = diff + "s ago";
+      else if (diff < 3600) s = Math.floor(diff/60) + "m ago";
+      else s = Math.floor(diff/3600) + "h " + Math.floor((diff%3600)/60) + "m ago";
+      document.getElementById("time-ago").textContent = s;
+    }}
+    ago();
+    setInterval(ago, 30000);
+  </script>
 </body>
 </html>"""
 

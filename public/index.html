@@ -62,7 +62,7 @@
       <h1>SA Diesel Prices</h1>
       <div class="subtitle">Gawler &rarr; Renmark &middot; Riverland corridor</div>
       <div class="meta">
-        <span>Updated: Tuesday 24 Mar 2026, 7:06pm ACDT</span>
+        <span>Scraped: Tuesday 24 Mar 2026, 7:08pm ACDT &middot; <span id="time-ago"></span></span>
         <span class="badge-source">Data: PetrolSpy</span>
       </div>
     </header>
@@ -248,5 +248,18 @@
       <div>fuel.davebock.au &middot; Prices sourced from community reports. Verify at the bowser.</div>
     </footer>
   </div>
+  <script>
+    var scraped = new Date("2026-03-24T19:08:32.707389+10:30");
+    function ago() {
+      var diff = Math.floor((Date.now() - scraped) / 1000);
+      var s;
+      if (diff < 60) s = diff + "s ago";
+      else if (diff < 3600) s = Math.floor(diff/60) + "m ago";
+      else s = Math.floor(diff/3600) + "h " + Math.floor((diff%3600)/60) + "m ago";
+      document.getElementById("time-ago").textContent = s;
+    }
+    ago();
+    setInterval(ago, 30000);
+  </script>
 </body>
 </html>
