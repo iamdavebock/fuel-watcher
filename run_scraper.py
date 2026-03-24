@@ -115,10 +115,11 @@ def main() -> None:
 
     except Exception as exc:
         print(f"ERROR ({source.SOURCE_NAME}): {exc}", file=sys.stderr)
-        # Write error page locally but do NOT push — keeps last good data live
-        error_html = render_error_html(str(exc), scraped_at)
-        OUTPUT_FILE.parent.mkdir(exist_ok=True)
-        OUTPUT_FILE.write_text(error_html, encoding="utf-8")
+        # Only write error page if there's no existing output (avoids overwriting good data)
+        if not OUTPUT_FILE.exists():
+            error_html = render_error_html(str(exc), scraped_at)
+            OUTPUT_FILE.parent.mkdir(exist_ok=True)
+            OUTPUT_FILE.write_text(error_html, encoding="utf-8")
         sys.exit(1)
 
 
