@@ -100,13 +100,12 @@ def render_html(
 ) -> str:
     timestamp_str = format_timestamp(scraped_at)
     diesel_html = _price_table_html(price_rows, "Diesel")
-    premium_html = _price_table_html(price_rows, "Premium Diesel")
     no_price_section = _no_price_html(no_price_stations)
 
     if not price_rows and not no_price_stations:
         main_content = '<p class="no-data">No data available for this corridor.</p>'
     else:
-        main_content = diesel_html + premium_html + no_price_section
+        main_content = diesel_html + no_price_section
 
     return f"""<!DOCTYPE html>
 <html lang="en">

@@ -23,10 +23,8 @@ API_HEADERS = {
     "X-Requested-With": "XMLHttpRequest",
 }
 
-FUEL_KEYS = {
-    "Diesel": ["DL", "dl", "DIESEL", "diesel"],
-    "Premium Diesel": ["PDL", "pdl", "PREMIUM_DIESEL", "PREM_DIESEL"],
-}
+DIESEL_KEYS = ["DL", "dl", "DIESEL", "diesel"]
+PREMIUM_DIESEL_KEYS = ["PDL", "pdl", "PREMIUM_DIESEL", "PREM_DIESEL"]
 
 
 def _raw_stations() -> list[dict]:
@@ -65,41 +63,37 @@ def fetch_and_normalise() -> tuple[list[dict], list[dict]]:
         brand = station.get("brand", "")
         town = extract_town(station)
         address = station.get("address", "")
-        found = False
 
-        for fuel_label, keys in FUEL_KEYS.items():
-            price = None
-            updated_dt = None
+        price = None
+        updated_dt = None
 
-            if isinstance(prices, dict):
-                for key in keys:
-                    if key not in prices:
-                        continue
-                    val = prices[key]
-                    if isinstance(val, (int, float)):
-                        price = float(val)
-                    elif isinstance(val, dict):
-                        amt = val.get("amount") or val.get("price") or val.get("value")
-                        if amt is not None:
-                            price = float(amt)
-                        ts_raw = val.get("updated") or val.get("lastUpdated") or val.get("date")
-                        updated_dt = parse_updated(ts_raw)
-                    if price is not None:
-                        break
+        if isinstance(prices, dict):
+            for key in DIESEL_KEYS + PREMIUM_DIESEL_KEYS:
+                if key not in prices:
+                    continue
+                val = prices[key]
+                if isinstance(val, (int, float)):
+                    price = float(val)
+                elif isinstance(val, dict):
+                    amt = val.get("amount") or val.get("price") or val.get("value")
+                    if amt is not None:
+                        price = float(amt)
+                    ts_raw = val.get("updated") or val.get("lastUpdated") or val.get("date")
+                    updated_dt = parse_updated(ts_raw)
+                if price is not None:
+                    break
 
-            if price is not None:
-                found = True
-                price_rows.append({
-                    "name": name,
-                    "brand": brand,
-                    "town": town,
-                    "fuel_type": fuel_label,
-                    "price": price,
-                    "updated_dt": updated_dt,
-                    "stale": is_stale(updated_dt),
-                })
-
-        if not found:
+        if price is not None:
+            price_rows.append({
+                "name": name,
+                "brand": brand,
+                "town": town,
+                "fuel_type": "Diesel",
+                "price": price,
+                "updated_dt": updated_dt,
+                "stale": is_stale(updated_dt),
+            })
+        else:
             no_price_stations.append({
                 "name": name, "brand": brand, "town": town, "address": address,
             })

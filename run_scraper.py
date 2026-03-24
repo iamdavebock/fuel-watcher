@@ -12,13 +12,13 @@ from pathlib import Path
 
 from scrape.common import now_adelaide, route_index
 from scrape.render import render_error_html, render_html
-from scrape.sources import fuelsnoop, petrolspy
+from scrape.sources import petrolspy
 
 # --------------------------------------------------------------------------- #
-# Source registry — add new sources here
+# Source registry
 # --------------------------------------------------------------------------- #
 
-SOURCES = [petrolspy, fuelsnoop]
+SOURCES = [petrolspy]
 
 # --------------------------------------------------------------------------- #
 # Paths
