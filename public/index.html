@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SA Diesel Prices — Gawler to Renmark</title>
+  <title>SA Diesel Prices</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
@@ -18,11 +18,20 @@
     }
     body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 1rem; }
     .container { max-width: 860px; margin: 0 auto; }
-    header { padding: 2rem 0 1.5rem; border-bottom: 1px solid var(--bg-mid); margin-bottom: 2rem; }
+    header { padding: 2rem 0 1.5rem; border-bottom: 1px solid var(--bg-mid); margin-bottom: 1.5rem; }
     header h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; color: #fff; letter-spacing: -0.5px; }
     header .subtitle { color: var(--teal); font-size: 1rem; font-weight: 500; margin-top: 0.25rem; }
     .meta { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-top: 1rem; font-size: 0.85rem; color: var(--text-dim); }
     .badge-source { background: var(--teal-dim); color: #fff; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
+    /* Tabs */
+    .tab-nav { display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 1px solid var(--bg-mid); flex-wrap: wrap; }
+    .tab-btn { background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; color: var(--text-dim); padding: 0.65rem 1.1rem; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; transition: all 0.15s; white-space: nowrap; }
+    .tab-btn:hover { color: var(--text); border-bottom-color: var(--teal-dim); }
+    .tab-btn.active { color: var(--teal); border-bottom-color: var(--teal); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .region-header { margin-bottom: 1.25rem; }
+    .region-route { font-size: 0.88rem; color: var(--text-dim); font-weight: 500; }
     section { margin-bottom: 2.5rem; }
     .section-title { font-size: 1.15rem; font-weight: 700; color: var(--teal); margin-bottom: 0.6rem; letter-spacing: -0.2px; }
     .section-title-warn { color: var(--orange); }
@@ -53,23 +62,34 @@
     .no-price-town { color: var(--text-dim); }
     .no-data { padding: 2rem; color: var(--text-dim); text-align: center; }
     footer { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--bg-mid); font-size: 0.8rem; color: var(--text-dim); line-height: 1.7; }
-    @media (max-width: 600px) { td, th { padding: 0.5rem 0.65rem; } .price-pill { font-size: 0.9rem; } .section-no-price { padding: 1rem; } }
+    @media (max-width: 600px) { td, th { padding: 0.5rem 0.65rem; } .price-pill { font-size: 0.9rem; } .section-no-price { padding: 1rem; } .tab-btn { padding: 0.55rem 0.75rem; font-size: 0.82rem; } }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
       <h1>SA Diesel Prices</h1>
-      <div class="subtitle">Gawler &rarr; Renmark &middot; Riverland corridor</div>
+      <div class="subtitle">South Australian fuel corridors</div>
       <div class="meta">
-        <span>Scraped: Tuesday 24 Mar 2026, 8:00pm ACDT &middot; <span id="time-ago"></span></span>
+        <span>Scraped: Tuesday 24 Mar 2026, 8:13pm ACDT &middot; <span id="time-ago"></span></span>
         <span class="badge-source">Data: PetrolSpy</span>
       </div>
     </header>
+    <nav class="tab-nav" role="tablist">
+      <button class="tab-btn active" data-tab="riverland" role="tab">Riverland</button>
+    <button class="tab-btn" data-tab="yorke" role="tab">Yorke Peninsula</button>
+    <button class="tab-btn" data-tab="fleurieu" role="tab">Fleurieu Peninsula</button>
+    <button class="tab-btn" data-tab="southeast" role="tab">Southeast SA</button>
+    </nav>
     <main>
+      <div id="tab-riverland" class="tab-panel active" role="tabpanel">
+  <div class="region-header">
+    <span class="region-route">Gawler &rarr; Renmark</span>
+  </div>
+  
   <section>
     <h2 class="section-title">Diesel</h2>
-    <p class="cheapest-note">Cheapest on route: <strong>294.9c/L</strong> — Barossa Roadhouse, Angaston</p>
+    <p class="cheapest-note">Cheapest: <strong>294.9c/L</strong> — Barossa Roadhouse, Angaston</p>
     <div class="table-wrap">
       <table>
         <thead>
@@ -80,151 +100,151 @@
       <tr class="row-main">
         <td>BP AM/PM Roseworthy Roadhouse <span class="brand">BP</span></td>
         <td class="price-cell"><span class="price-pill">299.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 
       <tr class="row-main">
         <td>BP Roseworthy <span class="brand">BP</span></td>
         <td class="price-cell"><span class="price-pill">301.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 <tr class="town-group"><td colspan="3">Nuriootpa</td></tr>
 
       <tr class="row-main">
         <td>Ampol Nuriootpa <span class="brand">AMPOL</span></td>
         <td class="price-cell"><span class="price-pill">299.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 
       <tr class="row-main">
         <td>BP Nuriootpa OPT <span class="brand">BP</span></td>
         <td class="price-cell"><span class="price-pill">301.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 
       <tr class="row-main">
         <td>Perrys Nuriootpa - Kuchel Contractors <span class="brand">OTHER</span></td>
         <td class="price-cell"><span class="price-pill">305.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 <tr class="town-group"><td colspan="3">Angaston</td></tr>
 
       <tr class="row-cheapest">
         <td>Barossa Roadhouse <span class="brand">AMPOL</span></td>
         <td class="price-cell"><span class="price-pill price-best">294.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 
       <tr class="row-main">
         <td>Angaston Motors <span class="brand">OTHER</span></td>
         <td class="price-cell"><span class="price-pill">299.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 <tr class="town-group"><td colspan="3">Truro</td></tr>
 
       <tr class="row-main">
         <td>United Truro <span class="brand">UNITED</span></td>
         <td class="price-cell"><span class="price-pill">299.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 <tr class="town-group"><td colspan="3">Blanchetown</td></tr>
 
       <tr class="row-main">
         <td>24 Seven Blanchetown <span class="brand">BP</span></td>
         <td class="price-cell"><span class="price-pill">296.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 
       <tr class="row-main">
         <td>Blanchetown Enterprises <span class="brand">AMPOL</span></td>
         <td class="price-cell"><span class="price-pill">296.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 <tr class="town-group"><td colspan="3">Waikerie</td></tr>
 
       <tr class="row-main">
         <td>Waikerie Perrys Unmanned Diesel <span class="brand">OTHER</span></td>
         <td class="price-cell"><span class="price-pill">305.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 <tr class="town-group"><td colspan="3">Barmera</td></tr>
 
       <tr class="row-main">
         <td>Liberty Barmera <span class="brand">LIBERTY</span></td>
         <td class="price-cell"><span class="price-pill">298.5c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 
       <tr class="row-main">
         <td>United Barmera Roadhouse <span class="brand">UNITED</span></td>
         <td class="price-cell"><span class="price-pill">298.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 
       <tr class="row-main">
         <td>BP Lake Bonney <span class="brand">BP</span></td>
         <td class="price-cell"><span class="price-pill">305.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 <tr class="town-group"><td colspan="3">Berri</td></tr>
 
       <tr class="row-main">
         <td>United Berri <span class="brand">UNITED</span></td>
         <td class="price-cell"><span class="price-pill">298.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 
       <tr class="row-main">
         <td>Berri (Mini-Tankers) <span class="brand">OTHER</span></td>
         <td class="price-cell"><span class="price-pill">298.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 <tr class="town-group"><td colspan="3">Loxton</td></tr>
 
       <tr class="row-main">
         <td>Flight Motors <span class="brand">AMPOL</span></td>
         <td class="price-cell"><span class="price-pill">309.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 
       <tr class="row-main">
         <td>Perrys Loxton (Unmanned) <span class="brand">OTHER</span></td>
         <td class="price-cell"><span class="price-pill">309.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 <tr class="town-group"><td colspan="3">Renmark</td></tr>
 
       <tr class="row-main">
         <td>Shell Renmark OPT <span class="brand">SHELL</span></td>
         <td class="price-cell"><span class="price-pill">298.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 
       <tr class="row-main">
         <td>Astron Renmark <span class="brand">ASTRON</span></td>
         <td class="price-cell"><span class="price-pill">299.5c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 <tr class="town-group"><td colspan="3">Renmark West</td></tr>
 
       <tr class="row-main">
         <td>Ral Ral Store <span class="brand">OTHER</span></td>
         <td class="price-cell"><span class="price-pill">299.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 <tr class="town-group"><td colspan="3">Renmark</td></tr>
 
       <tr class="row-main">
         <td>Ampol Renmark Depot <span class="brand">AMPOL</span></td>
         <td class="price-cell"><span class="price-pill">306.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr>
 <tr class="town-group"><td colspan="3">Sedan</td></tr>
 
       <tr class="row-cheapest">
         <td>Australia Post Sedan <span class="brand">OTHER</span></td>
         <td class="price-cell"><span class="price-pill price-best">294.9c</span></td>
-        <td class="updated-cell">24 Mar, 7:58pm</td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
       </tr></tbody>
       </table>
     </div>
@@ -237,14 +257,754 @@
       <strong>no price may indicate out of stock.</strong>
     </p>
     <ul class="no-price-list"><li><span class="no-price-town">Gawler</span> — <span class="no-price-name">BP Gawler</span> <span class="brand">BP</span></li><li><span class="no-price-town">Gawler East</span> — <span class="no-price-name">BP X Convenience Gawler East</span> <span class="brand">X</span></li><li><span class="no-price-town">Gawler</span> — <span class="no-price-name">Caltex Gawler</span> <span class="brand">CALTEX</span></li><li><span class="no-price-town">Kapunda</span> — <span class="no-price-name">Mobil Kapunda</span> <span class="brand">EXXON</span></li><li><span class="no-price-town">Kapunda</span> — <span class="no-price-name">Shell OTR Kapunda</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Nuriootpa</span> — <span class="no-price-name">BP X Convenience Nuriootpa</span> <span class="brand">X</span></li><li><span class="no-price-town">Nuriootpa</span> — <span class="no-price-name">Shell Get &amp; Go Nuriootpa</span> <span class="brand">SHELL</span></li><li><span class="no-price-town">Nuriootpa</span> — <span class="no-price-name">Shell OTR Nuriootpa</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Tanunda</span> — <span class="no-price-name">Shell OTR Tanunda</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Waikerie</span> — <span class="no-price-name">Caltex Waikerie</span> <span class="brand">CALTEX</span></li><li><span class="no-price-town">Waikerie</span> — <span class="no-price-name">Reddy Express Waikerie</span> <span class="brand">SHELL</span></li><li><span class="no-price-town">Waikerie</span> — <span class="no-price-name">Sutton Ford Self Service</span> <span class="brand">OTHER</span></li><li><span class="no-price-town">Berri</span> — <span class="no-price-name">Ampol Berri</span> <span class="brand">AMPOL</span></li><li><span class="no-price-town">Berri</span> — <span class="no-price-name">Shell OTR Berri</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Glossop</span> — <span class="no-price-name">Shell Get &amp; Go Glossop</span> <span class="brand">SHELL</span></li><li><span class="no-price-town">Loxton</span> — <span class="no-price-name">Independent</span> <span class="brand">AMPOL</span></li><li><span class="no-price-town">Loxton</span> — <span class="no-price-name">Schwarz Motor Repairs</span> <span class="brand">OTHER</span></li><li><span class="no-price-town">Loxton</span> — <span class="no-price-name">Shell OTR Loxton French Road</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Loxton</span> — <span class="no-price-name">Shell OTR Loxton Roundabout</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Renmark</span> — <span class="no-price-name">EG Ampol Renmark</span> <span class="brand">EG</span></li><li><span class="no-price-town">Renmark</span> — <span class="no-price-name">Shell OTR Renmark</span> <span class="brand">ONTHERUN</span></li></ul>
-  </section></main>
+  </section>
+</div>
+<div id="tab-yorke" class="tab-panel" role="tabpanel">
+  <div class="region-header">
+    <span class="region-route">Bolivar &rarr; Edithburgh</span>
+  </div>
+  
+  <section>
+    <h2 class="section-title">Diesel</h2>
+    <p class="cheapest-note">Cheapest: <strong>271.5c/L</strong> — Edithburgh Motors, Edithburgh</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Station</th><th>c/L</th><th>Updated</th></tr>
+        </thead>
+        <tbody><tr class="town-group"><td colspan="3">Bolivar</td></tr>
+
+      <tr class="row-main">
+        <td>Ampol Bolivar Gardens <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">292.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Two Wells</td></tr>
+
+      <tr class="row-main">
+        <td>Unmanned - 24 Seven Two Wells <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">297.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>IOR Two Wells Unmanned Truckstop <span class="brand">IOR</span></td>
+        <td class="price-cell"><span class="price-pill">301.0c</span></td>
+        <td class="updated-cell">15 Mar, 7:04pm <span class="badge-stale">Stale</span></td>
+      </tr>
+<tr class="town-group"><td colspan="3">Port Wakefield</td></tr>
+
+      <tr class="row-main">
+        <td>24 Seven Port Wakefield <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">296.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>United Port Wakefield <span class="brand">UNITED</span></td>
+        <td class="price-cell"><span class="price-pill">296.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Balaklava</td></tr>
+
+      <tr class="row-main">
+        <td>McCracken Ford <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">304.0c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>McArdle Pty Ltd (OPT) <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">309.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Simon Exhaust &amp; Auto Repairs <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">310.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Snowtown</td></tr>
+
+      <tr class="row-main">
+        <td>Shell Snowtown Roadhouse <span class="brand">SHELL</span></td>
+        <td class="price-cell"><span class="price-pill">309.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Port Broughton</td></tr>
+
+      <tr class="row-main">
+        <td>Shell Port Broughton <span class="brand">SHELL</span></td>
+        <td class="price-cell"><span class="price-pill">309.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Kadina</td></tr>
+
+      <tr class="row-main">
+        <td>Mobil Kadina <span class="brand">EXXON</span></td>
+        <td class="price-cell"><span class="price-pill">309.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Hunts Fuel Kadina <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">309.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Wallaroo</td></tr>
+
+      <tr class="row-main">
+        <td>Wallaroo Service Station <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">314.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Moonta</td></tr>
+
+      <tr class="row-main">
+        <td>Shell Moonta PERRYS <span class="brand">SHELL</span></td>
+        <td class="price-cell"><span class="price-pill">309.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Ardrossan</td></tr>
+
+      <tr class="row-main">
+        <td>Diesel Unmanned Ardrossan (Maxi-Tankers) <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>BP Ardrossan Roadhouse <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">309.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Maitland</td></tr>
+
+      <tr class="row-main">
+        <td>Eglington Bros <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">294.5c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Port Victoria</td></tr>
+
+      <tr class="row-main">
+        <td>T.G Atkins <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">283.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Minlaton</td></tr>
+
+      <tr class="row-main">
+        <td>Minlaton Auto Centre <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Yorketown</td></tr>
+
+      <tr class="row-main">
+        <td>Yorketown Fuel <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">299.0c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Yorketown Tyre and Auto <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">320.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Stansbury</td></tr>
+
+      <tr class="row-main">
+        <td>Dalrymple Motors &amp; Hardware <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">313.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Edithburgh</td></tr>
+
+      <tr class="row-cheapest">
+        <td>Edithburgh Motors <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill price-best">271.5c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Edithburgh Newsagency &amp; Delicatessen <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">309.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Warooka</td></tr>
+
+      <tr class="row-main">
+        <td>M&amp;G Automotives <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">316.0c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Port Vincent</td></tr>
+
+      <tr class="row-main">
+        <td>Port Vincent Service Station <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">295.1c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Port Vincent Fuels Mechanical Tyre Centre <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">297.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Curramulka</td></tr>
+
+      <tr class="row-main">
+        <td>Curramulka Rural Agencies <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Lower Light</td></tr>
+
+      <tr class="row-main">
+        <td>United Lower Light <span class="brand">UNITED</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Clinton</td></tr>
+
+      <tr class="row-main">
+        <td>Port Clinton General Store <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">308.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr></tbody>
+      </table>
+    </div>
+  </section>
+  <section class="section-no-price">
+    <h2 class="section-title section-title-warn">No Diesel Price Reported</h2>
+    <p class="no-price-note">
+      These corridor stations have no diesel or premium diesel price on record.
+      Under SA law, stations must report unavailability within 30&nbsp;minutes —
+      <strong>no price may indicate out of stock.</strong>
+    </p>
+    <ul class="no-price-list"><li><span class="no-price-town">Bolivar</span> — <span class="no-price-name">Shell OTR Bolivar</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Two Wells</span> — <span class="no-price-name">Shell OTR Two Wells</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Dublin</span> — <span class="no-price-name">Mobil Dublin</span> <span class="brand">EXXON</span></li><li><span class="no-price-town">Port Wakefield</span> — <span class="no-price-name">Port Wakefield Truckstop</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Balaklava</span> — <span class="no-price-name">Mid North Tyres Balaklava</span> <span class="brand">MOGAS</span></li><li><span class="no-price-town">Kadina</span> — <span class="no-price-name">EG Ampol Kadina</span> <span class="brand">EG</span></li><li><span class="no-price-town">Kadina</span> — <span class="no-price-name">Shell Kadina OPT</span> <span class="brand">SHELL</span></li><li><span class="no-price-town">Kadina</span> — <span class="no-price-name">Shell OTR Kadina</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Wallaroo</span> — <span class="no-price-name">Caltex Wallaroo</span> <span class="brand">CALTEX</span></li><li><span class="no-price-town">Wallaroo</span> — <span class="no-price-name">Mobil Wallaroo PERRYS</span> <span class="brand">EXXON</span></li><li><span class="no-price-town">Moonta</span> — <span class="no-price-name">Mobil Moonta PERRYS</span> <span class="brand">EXXON</span></li><li><span class="no-price-town">Maitland</span> — <span class="no-price-name">Mobil Maitland PERRYS</span> <span class="brand">EXXON</span></li><li><span class="no-price-town">Virginia</span> — <span class="no-price-name">BP X Convenience Virginia North</span> <span class="brand">X</span></li><li><span class="no-price-town">Virginia</span> — <span class="no-price-name">BP X Convenience Virginia South</span> <span class="brand">X</span></li><li><span class="no-price-town">Cavan</span> — <span class="no-price-name">Shell OTR Cavan Inbound</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Cavan</span> — <span class="no-price-name">Shell OTR Cavan Outbound</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Paralowie</span> — <span class="no-price-name">Shell OTR Paralowie</span> <span class="brand">ONTHERUN</span></li></ul>
+  </section>
+</div>
+<div id="tab-fleurieu" class="tab-panel" role="tabpanel">
+  <div class="region-header">
+    <span class="region-route">Reynella &rarr; Victor Harbor</span>
+  </div>
+  
+  <section>
+    <h2 class="section-title">Diesel</h2>
+    <p class="cheapest-note">Cheapest: <strong>289.9c/L</strong> — Milang Auto Repairs, Milang</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Station</th><th>c/L</th><th>Updated</th></tr>
+        </thead>
+        <tbody><tr class="town-group"><td colspan="3">Reynella</td></tr>
+
+      <tr class="row-main">
+        <td>Caltex Reynella <span class="brand">CALTEX</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Seaford Meadows</td></tr>
+
+      <tr class="row-main">
+        <td>Ampol Seaford Meadows <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">294.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Old Noarlunga</td></tr>
+
+      <tr class="row-main">
+        <td>Liberty Seaford <span class="brand">LIBERTY</span></td>
+        <td class="price-cell"><span class="price-pill">292.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>United Old Noarlunga <span class="brand">UNITED</span></td>
+        <td class="price-cell"><span class="price-pill">292.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Shell OTR Old Noarlunga <span class="brand">ONTHERUN</span></td>
+        <td class="price-cell"><span class="price-pill">297.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Noarlunga Centre</td></tr>
+
+      <tr class="row-main">
+        <td>Caltex Noarlunga <span class="brand">CALTEX</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Hackham</td></tr>
+
+      <tr class="row-main">
+        <td>Leroy&#x27;s Hackham <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">299.5c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Mclaren Vale</td></tr>
+
+      <tr class="row-main">
+        <td>Reddy Express Mclaren Vale <span class="brand">SHELL</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Willunga</td></tr>
+
+      <tr class="row-main">
+        <td>BP Willunga <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>BP Diesel Willunga Hill OPT <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">301.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Normanville</td></tr>
+
+      <tr class="row-main">
+        <td>BP &#x27;77 South&#x27; Normanville <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">301.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Myponga</td></tr>
+
+      <tr class="row-main">
+        <td>Shell Myponga <span class="brand">SHELL</span></td>
+        <td class="price-cell"><span class="price-pill">309.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Strathalbyn</td></tr>
+
+      <tr class="row-main">
+        <td>United Strathalbyn <span class="brand">UNITED</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>BP AM/PM Strathalbyn <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>BP Strathalbyn OPT <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">301.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Milang</td></tr>
+
+      <tr class="row-cheapest">
+        <td>Milang Auto Repairs <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill price-best">289.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Goolwa</td></tr>
+
+      <tr class="row-main">
+        <td>BP Goolwa <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">297.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Hindmarsh Island</td></tr>
+
+      <tr class="row-main">
+        <td>Coorong Quays Hindmarsh Island <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">302.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Middleton</td></tr>
+
+      <tr class="row-main">
+        <td>Middleton General Store <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">294.4c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Victor Harbor</td></tr>
+
+      <tr class="row-main">
+        <td>Reddy Express Victor Harbour <span class="brand">REDDY</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Kangarilla</td></tr>
+
+      <tr class="row-main">
+        <td>Kangarilla Auto Centre <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Mount Compass</td></tr>
+
+      <tr class="row-main">
+        <td>BP Mount Compass <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">309.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr></tbody>
+      </table>
+    </div>
+  </section>
+  <section class="section-no-price">
+    <h2 class="section-title section-title-warn">No Diesel Price Reported</h2>
+    <p class="no-price-note">
+      These corridor stations have no diesel or premium diesel price on record.
+      Under SA law, stations must report unavailability within 30&nbsp;minutes —
+      <strong>no price may indicate out of stock.</strong>
+    </p>
+    <ul class="no-price-list"><li><span class="no-price-town">Reynella</span> — <span class="no-price-name">Ampol Reynella</span> <span class="brand">AMPOL</span></li><li><span class="no-price-town">Reynella</span> — <span class="no-price-name">Shell OTR Old Reynella</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Morphett Vale</span> — <span class="no-price-name">Shell OTR Morphett Vale Inbound</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Morphett Vale</span> — <span class="no-price-name">Shell OTR Morphett Vale Outbound</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Seaford</span> — <span class="no-price-name">BP X Convenience Seaford</span> <span class="brand">X</span></li><li><span class="no-price-town">Seaford</span> — <span class="no-price-name">EG Ampol Seaford</span> <span class="brand">EG</span></li><li><span class="no-price-town">Seaford</span> — <span class="no-price-name">Shell OTR Seaford</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Noarlunga Downs</span> — <span class="no-price-name">Ampol Noarlunga Downs</span> <span class="brand">AMPOL</span></li><li><span class="no-price-town">Noarlunga Centre</span> — <span class="no-price-name">EG Ampol Noarlunga Centre</span> <span class="brand">EG</span></li><li><span class="no-price-town">Aldinga Beach</span> — <span class="no-price-name">BP Aldinga Beach Central</span> <span class="brand">BP</span></li><li><span class="no-price-town">Aldinga Beach</span> — <span class="no-price-name">BP X Convenience Aldinga Beach</span> <span class="brand">X</span></li><li><span class="no-price-town">Aldinga</span> — <span class="no-price-name">Shell OTR Aldinga</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Goolwa</span> — <span class="no-price-name">EG Ampol Goolwa</span> <span class="brand">EG</span></li><li><span class="no-price-town">Goolwa</span> — <span class="no-price-name">South Coast Marine - Shell Goolwa</span> <span class="brand">SHELL</span></li><li><span class="no-price-town">Hindmarsh Valley (Victor Harbor)</span> — <span class="no-price-name">BP OPT Hindmarsh Valley (Victor Harbor)</span> <span class="brand">BP</span></li><li><span class="no-price-town">Victor Harbor</span> — <span class="no-price-name">BP X Convenience Victor Harbor</span> <span class="brand">X</span></li><li><span class="no-price-town">Victor Harbor</span> — <span class="no-price-name">EG Ampol Victor Harbor</span> <span class="brand">EG</span></li><li><span class="no-price-town">Victor Harbor</span> — <span class="no-price-name">Liberty Victor Harbor</span> <span class="brand">LIBERTY</span></li><li><span class="no-price-town">Hayborough</span> — <span class="no-price-name">Shell OTR Victor Harbor</span> <span class="brand">ONTHERUN</span></li></ul>
+  </section>
+</div>
+<div id="tab-southeast" class="tab-panel" role="tabpanel">
+  <div class="region-header">
+    <span class="region-route">Mt Barker &rarr; Mt Gambier</span>
+  </div>
+  
+  <section>
+    <h2 class="section-title">Diesel</h2>
+    <p class="cheapest-note">Cheapest: <strong>255.0c/L</strong> — Shell Robe Wharf OPT, Robe</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Station</th><th>c/L</th><th>Updated</th></tr>
+        </thead>
+        <tbody><tr class="town-group"><td colspan="3">Mount Barker</td></tr>
+
+      <tr class="row-main">
+        <td>BP AM/PM Mount Barker <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Murray Bridge</td></tr>
+
+      <tr class="row-main">
+        <td>United Murray Bridge <span class="brand">UNITED</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Reddy Express Murray Bridge <span class="brand">REDDY</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>BP Murray Bridge East <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">301.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Ampol Murray Bridge <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">306.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Mannum</td></tr>
+
+      <tr class="row-main">
+        <td>United Mannum (Distributor) <span class="brand">UNITED</span></td>
+        <td class="price-cell"><span class="price-pill">298.9c</span></td>
+        <td class="updated-cell">24 Mar, 1:36pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Tailem Bend</td></tr>
+
+      <tr class="row-main">
+        <td>United Tailem Bend <span class="brand">UNITED</span></td>
+        <td class="price-cell"><span class="price-pill">296.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Reddy Express Tailem Bend <span class="brand">REDDY</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Tailem Bend Roadhouse <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">300.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Meningie</td></tr>
+
+      <tr class="row-main">
+        <td>BP Meningie <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">296.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Perrys Unmanned Meningie <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">309.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Tintinara</td></tr>
+
+      <tr class="row-main">
+        <td>Tinty Auto &amp; Ag <span class="brand">MOGAS</span></td>
+        <td class="price-cell"><span class="price-pill">294.0c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Tintinara Travel Stop <span class="brand">UNITED</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Tintinara Roadhouse <span class="brand">SHELL</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Keith</td></tr>
+
+      <tr class="row-main">
+        <td>24 Seven Keith <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">296.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Gaskells Keith <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">301.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Ampol Keith <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">305.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Bordertown</td></tr>
+
+      <tr class="row-main">
+        <td>Bordertown Roadhouse <span class="brand">SHELL</span></td>
+        <td class="price-cell"><span class="price-pill">298.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Liberty Bordertown <span class="brand">LIBERTY</span></td>
+        <td class="price-cell"><span class="price-pill">299.7c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Shell OTR Bordertown Truck &amp; Bus Stop <span class="brand">ONTHERUN</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Ampol Depot Bordertown <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">307.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Shell Bordertown <span class="brand">SHELL</span></td>
+        <td class="price-cell"><span class="price-pill">309.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Caltex Bordertown <span class="brand">CALTEX</span></td>
+        <td class="price-cell"><span class="price-pill">309.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Naracoorte</td></tr>
+
+      <tr class="row-main">
+        <td>Reddy Express Naracoorte <span class="brand">REDDY</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Ampol Naracoorte Depot Front - TASCO <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">300.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Maggi&#x27;s Food &amp; Fuel <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">304.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Penola</td></tr>
+
+      <tr class="row-main">
+        <td>Shell Penola Roadhouse <span class="brand">SHELL</span></td>
+        <td class="price-cell"><span class="price-pill">308.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Kingston Se</td></tr>
+
+      <tr class="row-main">
+        <td>Ampol Kingston SE <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">313.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Robe</td></tr>
+
+      <tr class="row-cheapest">
+        <td>Shell Robe Wharf OPT <span class="brand">SHELL</span></td>
+        <td class="price-cell"><span class="price-pill price-best">255.0c</span></td>
+        <td class="updated-cell">10 Mar, 1:32pm <span class="badge-stale">Stale</span></td>
+      </tr>
+
+      <tr class="row-main">
+        <td>K&amp;S Fuels Robe <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">314.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Ampol Robe Auto &amp; Marine <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">314.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Beachport</td></tr>
+
+      <tr class="row-main">
+        <td>Jarmos Automotive Services <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">306.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Millicent</td></tr>
+
+      <tr class="row-main">
+        <td>Millicent Roadhouse <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">311.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Mount Gambier</td></tr>
+
+      <tr class="row-main">
+        <td>APCO Mount Gambier <span class="brand">APCO</span></td>
+        <td class="price-cell"><span class="price-pill">293.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Mount Gambier East</td></tr>
+
+      <tr class="row-main">
+        <td>BP One Stop Mount Gambier <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">294.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Mount Gambier</td></tr>
+
+      <tr class="row-main">
+        <td>Shell OTR Mount Gambier East <span class="brand">ONTHERUN</span></td>
+        <td class="price-cell"><span class="price-pill">297.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>BP Mount Gambier West <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Reddy Express Mount Gambier <span class="brand">REDDY</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Ampol Mt Gambier <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">306.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Ampol Truck Stop West OPT <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">306.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Ampol Mount Gambier Jubilee Hwy OPT <span class="brand">AMPOL</span></td>
+        <td class="price-cell"><span class="price-pill">306.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>Mount Gambier Perrys Unmanned <span class="brand">SHELL</span></td>
+        <td class="price-cell"><span class="price-pill">309.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Suttontown</td></tr>
+
+      <tr class="row-main">
+        <td>BP Mt Gambier Truckstop (Matthews Petroleum) <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">293.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Bridgewater</td></tr>
+
+      <tr class="row-main">
+        <td>Bridgewater Service Station <span class="brand">OTHER</span></td>
+        <td class="price-cell"><span class="price-pill">294.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+
+      <tr class="row-main">
+        <td>BP Aldgate <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Suttontown</td></tr>
+
+      <tr class="row-main">
+        <td>Endeavour Mount Gambier <span class="brand">ENDEAVOUR</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Glenburnie</td></tr>
+
+      <tr class="row-main">
+        <td>United Mount Gambier <span class="brand">UNITED</span></td>
+        <td class="price-cell"><span class="price-pill">299.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr>
+<tr class="town-group"><td colspan="3">Rosetown</td></tr>
+
+      <tr class="row-main">
+        <td>BP OPT Kingston SE <span class="brand">BP</span></td>
+        <td class="price-cell"><span class="price-pill">309.9c</span></td>
+        <td class="updated-cell">24 Mar, 8:05pm</td>
+      </tr></tbody>
+      </table>
+    </div>
+  </section>
+  <section class="section-no-price">
+    <h2 class="section-title section-title-warn">No Diesel Price Reported</h2>
+    <p class="no-price-note">
+      These corridor stations have no diesel or premium diesel price on record.
+      Under SA law, stations must report unavailability within 30&nbsp;minutes —
+      <strong>no price may indicate out of stock.</strong>
+    </p>
+    <ul class="no-price-list"><li><span class="no-price-town">Mt Barker</span> — <span class="no-price-name">Ampol Mt Barker</span> <span class="brand">AMPOL</span></li><li><span class="no-price-town">Mt Barker</span> — <span class="no-price-name">EG Ampol Mt Barker</span> <span class="brand">EG</span></li><li><span class="no-price-town">Mt Barker</span> — <span class="no-price-name">Shell OTR Mt Barker East</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Mount Barker</span> — <span class="no-price-name">BP X Convenience Mount Barker</span> <span class="brand">X</span></li><li><span class="no-price-town">Mount Barker</span> — <span class="no-price-name">BP X Convenience Newenham</span> <span class="brand">X</span></li><li><span class="no-price-town">Mount Barker</span> — <span class="no-price-name">Shell OTR Mt Barker West</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Callington</span> — <span class="no-price-name">Callington General Store</span> <span class="brand">OTHER</span></li><li><span class="no-price-town">Murray Bridge</span> — <span class="no-price-name">BP X Convenience Murray Bridge</span> <span class="brand">X</span></li><li><span class="no-price-town">Murray Bridge</span> — <span class="no-price-name">EG Ampol Murray Bridge</span> <span class="brand">EG</span></li><li><span class="no-price-town">Murray Bridge</span> — <span class="no-price-name">Shell OTR Murray Bridge</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Murray Bridge</span> — <span class="no-price-name">Shell OTR Murray Bridge</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Murray Bridge East</span> — <span class="no-price-name">Shell OTR Murray Bridge Eastside</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Mannum</span> — <span class="no-price-name">Shell OTR Mannum</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Tailem Bend</span> — <span class="no-price-name">Shell OTR Murray View</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Keith</span> — <span class="no-price-name">Liberty Keith OPT</span> <span class="brand">LIBERTY</span></li><li><span class="no-price-town">Naracoorte</span> — <span class="no-price-name">EG Ampol Naracoorte</span> <span class="brand">EG</span></li><li><span class="no-price-town">Naracoorte</span> — <span class="no-price-name">Shell OTR Naracoorte</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Kingston Se</span> — <span class="no-price-name">Shell OTR Kingston SE</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Mount Gambier</span> — <span class="no-price-name">Ampol Mt Gambier East Roadhouse</span> <span class="brand">AMPOL</span></li><li><span class="no-price-town">Mount Gambier</span> — <span class="no-price-name">BP AMPM Bay Road</span> <span class="brand">BP</span></li><li><span class="no-price-town">Mount Gambier</span> — <span class="no-price-name">EG Ampol Mt Gambier Marketplace</span> <span class="brand">EG</span></li><li><span class="no-price-town">Mount Gambier</span> — <span class="no-price-name">Mobil Mount Gambier</span> <span class="brand">EXXON</span></li><li><span class="no-price-town">Mount Gambier</span> — <span class="no-price-name">Mount Gambier East Diesel Stop</span> <span class="brand">AMPOL</span></li><li><span class="no-price-town">Mount Gambier</span> — <span class="no-price-name">Pearl Energy Mount Gambier</span> <span class="brand">PEARL</span></li><li><span class="no-price-town">Mount Gambier</span> — <span class="no-price-name">Shell OTR Mount Gambier</span> <span class="brand">ONTHERUN</span></li><li><span class="no-price-town">Naracoote</span> — <span class="no-price-name">Ampol Naracoorte</span> <span class="brand">AMPOL</span></li><li><span class="no-price-town">Stirling</span> — <span class="no-price-name">BP AM/PM Stirling</span> <span class="brand">BP</span></li><li><span class="no-price-town">Stirling</span> — <span class="no-price-name">EG Ampol Stirling</span> <span class="brand">EG</span></li></ul>
+  </section>
+</div>
+    </main>
     <footer>
       <div>Prices sourced from community reports. Verify at the bowser.</div>
       <div style="margin-top:0.4rem">Powered by <strong>Ember</strong> &middot; Built by <a href="https://davebock.au" style="color:var(--teal);text-decoration:none">Dave Bock</a></div>
     </footer>
   </div>
   <script>
-    var scraped = new Date("2026-03-24T20:00:02.046436+10:30");
+    var scraped = new Date("2026-03-24T20:13:50.223648+10:30");
     function ago() {
       var diff = Math.floor((Date.now() - scraped) / 1000);
       var s;
@@ -255,6 +1015,18 @@
     }
     ago();
     setInterval(ago, 30000);
+
+    // Tab switching
+    var buttons = document.querySelectorAll(".tab-btn");
+    var panels = document.querySelectorAll(".tab-panel");
+    buttons.forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        buttons.forEach(function(b) { b.classList.remove("active"); });
+        panels.forEach(function(p) { p.classList.remove("active"); });
+        btn.classList.add("active");
+        document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+      });
+    });
   </script>
 </body>
 </html>

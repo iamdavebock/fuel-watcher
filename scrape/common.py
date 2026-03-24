@@ -6,41 +6,126 @@ from zoneinfo import ZoneInfo
 
 ADELAIDE_TZ = ZoneInfo("Australia/Adelaide")
 
-TARGET_TOWNS = [
-    "gawler", "nuriootpa", "angaston", "tanunda", "truro", "blanchetown",
-    "waikerie", "barmera", "berri", "glossop", "monash", "renmark",
-    "paringa", "loxton", "roseworthy", "kapunda", "freeling",
-    "kingston on murray", "cadell", "moorook", "cobdogla",
-]
+REGIONS: dict[str, dict] = {
+    "riverland": {
+        "label": "Riverland",
+        "route_start": "Gawler",
+        "route_end": "Renmark",
+        "bbox": {"neLat": "-34.00", "neLng": "140.80", "swLat": "-34.85", "swLng": "138.70"},
+        "target_towns": [
+            "gawler", "nuriootpa", "angaston", "tanunda", "truro", "blanchetown",
+            "waikerie", "barmera", "berri", "glossop", "monash", "renmark",
+            "paringa", "loxton", "roseworthy", "kapunda", "freeling",
+            "kingston on murray", "cadell", "moorook", "cobdogla",
+        ],
+        "route_order": [
+            "gawler", "roseworthy", "freeling", "kapunda",
+            "nuriootpa", "angaston", "tanunda",
+            "truro", "blanchetown",
+            "waikerie", "cadell", "kingston on murray",
+            "moorook", "cobdogla", "barmera",
+            "berri", "glossop", "monash",
+            "loxton", "renmark", "paringa",
+        ],
+    },
+    "yorke": {
+        "label": "Yorke Peninsula",
+        "route_start": "Bolivar",
+        "route_end": "Edithburgh",
+        "bbox": {"neLat": "-33.50", "neLng": "138.65", "swLat": "-35.20", "swLng": "137.20"},
+        "target_towns": [
+            "bolivar", "two wells", "dublin", "port wakefield", "balaklava",
+            "snowtown", "port broughton", "mundoora", "kadina", "wallaroo",
+            "moonta", "ardrossan", "maitland", "port victoria", "minlaton",
+            "yorketown", "stansbury", "edithburgh", "warooka", "port vincent",
+            "curramulka", "pine point", "wool bay", "clinton",
+        ],
+        "route_order": [
+            "bolivar", "two wells", "dublin", "port wakefield",
+            "balaklava", "snowtown", "port broughton",
+            "kadina", "wallaroo", "moonta",
+            "ardrossan", "maitland", "port victoria",
+            "minlaton", "yorketown", "stansbury", "edithburgh",
+            "warooka", "port vincent", "curramulka",
+        ],
+    },
+    "fleurieu": {
+        "label": "Fleurieu Peninsula",
+        "route_start": "Reynella",
+        "route_end": "Victor Harbor",
+        "bbox": {"neLat": "-34.95", "neLng": "139.10", "swLat": "-35.75", "swLng": "138.25"},
+        "target_towns": [
+            "reynella", "morphett vale", "noarlunga", "port noarlunga", "old noarlunga",
+            "christie downs", "hackham", "mclaren vale", "mclaren flat", "willunga",
+            "aldinga", "aldinga beach", "sellicks beach", "yankalilla", "normanville",
+            "myponga", "goolwa", "milang", "port elliot", "encounter bay",
+            "victor harbor", "middleton", "currency creek", "strathalbyn",
+            "hindmarsh island", "seaford", "maslin beach", "moana",
+        ],
+        "route_order": [
+            "reynella", "morphett vale", "seaford", "moana", "noarlunga",
+            "port noarlunga", "old noarlunga", "christie downs", "hackham",
+            "mclaren vale", "mclaren flat", "willunga",
+            "aldinga", "aldinga beach", "maslin beach", "sellicks beach",
+            "yankalilla", "normanville", "myponga",
+            "strathalbyn", "milang", "currency creek",
+            "goolwa", "hindmarsh island",
+            "middleton", "port elliot",
+            "encounter bay", "victor harbor",
+        ],
+    },
+    "southeast": {
+        "label": "Southeast SA",
+        "route_start": "Mt Barker",
+        "route_end": "Mt Gambier",
+        "bbox": {"neLat": "-34.90", "neLng": "141.10", "swLat": "-38.10", "swLng": "138.70"},
+        "target_towns": [
+            "mt barker", "mount barker", "callington", "murray bridge",
+            "tailem bend", "meningie", "tintinara", "keith",
+            "bordertown", "naracoorte", "penola",
+            "kingston se", "kingston", "robe", "beachport",
+            "millicent", "mt gambier", "mount gambier",
+            "mannum",
+        ],
+        "route_order": [
+            "mt barker", "mount barker", "callington",
+            "murray bridge", "mannum",
+            "tailem bend", "meningie",
+            "tintinara", "keith",
+            "bordertown", "naracoorte", "penola",
+            "kingston", "kingston se", "robe",
+            "beachport", "millicent",
+            "mt gambier", "mount gambier",
+        ],
+    },
+}
 
-ROUTE_ORDER = [
-    "gawler", "roseworthy", "freeling", "kapunda",
-    "nuriootpa", "angaston", "tanunda",
-    "truro",
-    "blanchetown",
-    "waikerie", "cadell", "kingston on murray",
-    "moorook", "cobdogla", "barmera",
-    "berri", "glossop", "monash",
-    "loxton",
-    "renmark", "paringa",
-]
+# Backward-compat aliases (point at Riverland)
+TARGET_TOWNS = REGIONS["riverland"]["target_towns"]
+ROUTE_ORDER = REGIONS["riverland"]["route_order"]
 
 
-def route_index(town: str) -> int:
+def route_index(town: str, route_order: list[str] | None = None) -> int:
+    order = route_order if route_order is not None else ROUTE_ORDER
     t = town.lower()
-    for i, name in enumerate(ROUTE_ORDER):
+    for i, name in enumerate(order):
         if name in t or t in name:
             return i
-    return len(ROUTE_ORDER)
+    return len(order)
 
 
-def station_matches_target(station: dict) -> bool:
+def station_matches_region(station: dict, target_towns: list[str]) -> bool:
     haystack = " ".join([
         station.get("name", ""),
         station.get("address", ""),
         station.get("suburb", ""),
     ]).lower()
-    return any(town in haystack for town in TARGET_TOWNS)
+    return any(town in haystack for town in target_towns)
+
+
+def station_matches_target(station: dict) -> bool:
+    """Backward compat — Riverland only."""
+    return station_matches_region(station, TARGET_TOWNS)
 
 
 def extract_town(station: dict) -> str:
@@ -57,7 +142,8 @@ def extract_town(station: dict) -> str:
         elif len(tokens) >= 2 and tokens[-1].isdigit():
             return " ".join(tokens[:-1]).title()
         return town_part.title()
-    for town in TARGET_TOWNS:
+    all_towns = [t for r in REGIONS.values() for t in r["target_towns"]]
+    for town in all_towns:
         if town in address.lower():
             return town.title()
     return ""

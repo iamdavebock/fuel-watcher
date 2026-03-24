@@ -1,4 +1,4 @@
-"""HTML rendering for fuel-watcher static output."""
+"""HTML rendering for fuel-watcher — multi-region tabbed output."""
 from __future__ import annotations
 
 from datetime import datetime
@@ -7,14 +7,14 @@ from html import escape
 from scrape.common import format_timestamp, format_updated_display, route_index
 
 
-def _price_table_html(rows: list[dict], fuel_type: str) -> str:
+def _price_table_html(rows: list[dict], route_order: list[str], fuel_type: str) -> str:
     filtered = [r for r in rows if r["fuel_type"] == fuel_type]
     if not filtered:
         return ""
 
     cheapest_price = min(r["price"] for r in filtered)
     cheapest_row = min(filtered, key=lambda r: r["price"])
-    filtered.sort(key=lambda r: (route_index(r["town"]), r["price"]))
+    filtered.sort(key=lambda r: (route_index(r["town"], route_order), r["price"]))
 
     table_rows: list[str] = []
     prev_town = None
@@ -47,7 +47,7 @@ def _price_table_html(rows: list[dict], fuel_type: str) -> str:
 
     rows_html = "\n".join(table_rows)
     cheapest_note = (
-        f'<p class="cheapest-note">Cheapest on route: '
+        f'<p class="cheapest-note">Cheapest: '
         f'<strong>{cheapest_price:.1f}c/L</strong> — '
         f'{escape(cheapest_row["name"])}, {escape(cheapest_row["town"])}</p>'
     )
@@ -67,11 +67,13 @@ def _price_table_html(rows: list[dict], fuel_type: str) -> str:
   </section>"""
 
 
-def _no_price_html(stations: list[dict]) -> str:
+def _no_price_html(stations: list[dict], route_order: list[str]) -> str:
     if not stations:
         return ""
 
-    sorted_stations = sorted(stations, key=lambda s: (route_index(s["town"]), s["name"]))
+    sorted_stations = sorted(
+        stations, key=lambda s: (route_index(s["town"], route_order), s["name"])
+    )
     items = []
     for s in sorted_stations:
         brand = f' <span class="brand">{escape(s["brand"])}</span>' if s["brand"] else ""
@@ -92,28 +94,65 @@ def _no_price_html(stations: list[dict]) -> str:
   </section>"""
 
 
+def _region_panel_html(region_key: str, region_data: dict) -> str:
+    route_order = region_data["route_order"]
+    price_rows = region_data["price_rows"]
+    no_price_stations = region_data["no_price_stations"]
+
+    diesel_html = _price_table_html(price_rows, route_order, "Diesel")
+    premium_html = _price_table_html(price_rows, route_order, "Premium Diesel")
+    no_price_section = _no_price_html(no_price_stations, route_order)
+
+    if not price_rows and not no_price_stations:
+        content = '<p class="no-data">No data available for this region.</p>'
+    else:
+        content = diesel_html + premium_html + no_price_section
+
+    label = escape(region_data["label"])
+    route_start = escape(region_data["route_start"])
+    route_end = escape(region_data["route_end"])
+
+    return f"""<div id="tab-{region_key}" class="tab-panel" role="tabpanel">
+  <div class="region-header">
+    <span class="region-route">{route_start} &rarr; {route_end}</span>
+  </div>
+  {content}
+</div>"""
+
+
 def render_html(
-    price_rows: list[dict],
-    no_price_stations: list[dict],
+    regions_data: dict,
     scraped_at: datetime,
     source_name: str,
 ) -> str:
     timestamp_str = format_timestamp(scraped_at)
     scraped_iso = scraped_at.isoformat()
-    diesel_html = _price_table_html(price_rows, "Diesel")
-    no_price_section = _no_price_html(no_price_stations)
 
-    if not price_rows and not no_price_stations:
-        main_content = '<p class="no-data">No data available for this corridor.</p>'
-    else:
-        main_content = diesel_html + no_price_section
+    # Tab buttons
+    tab_buttons = []
+    for i, (region_key, region_data) in enumerate(regions_data.items()):
+        active = " active" if i == 0 else ""
+        tab_buttons.append(
+            f'<button class="tab-btn{active}" data-tab="{region_key}" role="tab">'
+            f'{escape(region_data["label"])}</button>'
+        )
+    tab_nav_html = "\n    ".join(tab_buttons)
+
+    # Tab panels
+    panels = []
+    for i, (region_key, region_data) in enumerate(regions_data.items()):
+        panel = _region_panel_html(region_key, region_data)
+        if i == 0:
+            panel = panel.replace('class="tab-panel"', 'class="tab-panel active"')
+        panels.append(panel)
+    panels_html = "\n".join(panels)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SA Diesel Prices — Gawler to Renmark</title>
+  <title>SA Diesel Prices</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
@@ -128,11 +167,20 @@ def render_html(
     }}
     body {{ font-family: 'DM Sans', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 1rem; }}
     .container {{ max-width: 860px; margin: 0 auto; }}
-    header {{ padding: 2rem 0 1.5rem; border-bottom: 1px solid var(--bg-mid); margin-bottom: 2rem; }}
+    header {{ padding: 2rem 0 1.5rem; border-bottom: 1px solid var(--bg-mid); margin-bottom: 1.5rem; }}
     header h1 {{ font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; color: #fff; letter-spacing: -0.5px; }}
     header .subtitle {{ color: var(--teal); font-size: 1rem; font-weight: 500; margin-top: 0.25rem; }}
     .meta {{ display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-top: 1rem; font-size: 0.85rem; color: var(--text-dim); }}
     .badge-source {{ background: var(--teal-dim); color: #fff; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }}
+    /* Tabs */
+    .tab-nav {{ display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 1px solid var(--bg-mid); flex-wrap: wrap; }}
+    .tab-btn {{ background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; color: var(--text-dim); padding: 0.65rem 1.1rem; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; transition: all 0.15s; white-space: nowrap; }}
+    .tab-btn:hover {{ color: var(--text); border-bottom-color: var(--teal-dim); }}
+    .tab-btn.active {{ color: var(--teal); border-bottom-color: var(--teal); }}
+    .tab-panel {{ display: none; }}
+    .tab-panel.active {{ display: block; }}
+    .region-header {{ margin-bottom: 1.25rem; }}
+    .region-route {{ font-size: 0.88rem; color: var(--text-dim); font-weight: 500; }}
     section {{ margin-bottom: 2.5rem; }}
     .section-title {{ font-size: 1.15rem; font-weight: 700; color: var(--teal); margin-bottom: 0.6rem; letter-spacing: -0.2px; }}
     .section-title-warn {{ color: var(--orange); }}
@@ -163,20 +211,25 @@ def render_html(
     .no-price-town {{ color: var(--text-dim); }}
     .no-data {{ padding: 2rem; color: var(--text-dim); text-align: center; }}
     footer {{ margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--bg-mid); font-size: 0.8rem; color: var(--text-dim); line-height: 1.7; }}
-    @media (max-width: 600px) {{ td, th {{ padding: 0.5rem 0.65rem; }} .price-pill {{ font-size: 0.9rem; }} .section-no-price {{ padding: 1rem; }} }}
+    @media (max-width: 600px) {{ td, th {{ padding: 0.5rem 0.65rem; }} .price-pill {{ font-size: 0.9rem; }} .section-no-price {{ padding: 1rem; }} .tab-btn {{ padding: 0.55rem 0.75rem; font-size: 0.82rem; }} }}
   </style>
 </head>
 <body>
   <div class="container">
     <header>
       <h1>SA Diesel Prices</h1>
-      <div class="subtitle">Gawler &rarr; Renmark &middot; Riverland corridor</div>
+      <div class="subtitle">South Australian fuel corridors</div>
       <div class="meta">
         <span>Scraped: {escape(timestamp_str)} &middot; <span id="time-ago"></span></span>
         <span class="badge-source">Data: {escape(source_name)}</span>
       </div>
     </header>
-    <main>{main_content}</main>
+    <nav class="tab-nav" role="tablist">
+      {tab_nav_html}
+    </nav>
+    <main>
+      {panels_html}
+    </main>
     <footer>
       <div>Prices sourced from community reports. Verify at the bowser.</div>
       <div style="margin-top:0.4rem">Powered by <strong>Ember</strong> &middot; Built by <a href="https://davebock.au" style="color:var(--teal);text-decoration:none">Dave Bock</a></div>
@@ -194,6 +247,18 @@ def render_html(
     }}
     ago();
     setInterval(ago, 30000);
+
+    // Tab switching
+    var buttons = document.querySelectorAll(".tab-btn");
+    var panels = document.querySelectorAll(".tab-panel");
+    buttons.forEach(function(btn) {{
+      btn.addEventListener("click", function() {{
+        buttons.forEach(function(b) {{ b.classList.remove("active"); }});
+        panels.forEach(function(p) {{ p.classList.remove("active"); }});
+        btn.classList.add("active");
+        document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+      }});
+    }});
   </script>
 </body>
 </html>"""

@@ -1,20 +1,17 @@
-"""PetrolSpy bounding box API source."""
+"""PetrolSpy bounding box API source — multi-region."""
 from __future__ import annotations
 
+import time
 import httpx
 
-from scrape.common import extract_town, is_stale, parse_updated, station_matches_target
+from scrape.common import (
+    REGIONS, extract_town, is_stale, parse_updated, station_matches_region,
+)
 
 SOURCE_NAME = "petrolspy"
 DISPLAY_NAME = "PetrolSpy"
 
 API_URL = "https://petrolspy.com.au/webservice-1/station/box"
-API_PARAMS = {
-    "neLat": "-34.00",
-    "neLng": "140.80",
-    "swLat": "-34.85",
-    "swLng": "138.70",
-}
 API_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Accept": "application/json",
@@ -27,9 +24,15 @@ DIESEL_KEYS = ["DL", "dl", "DIESEL", "diesel"]
 PREMIUM_DIESEL_KEYS = ["PDL", "pdl", "PREMIUM_DIESEL", "PREM_DIESEL"]
 
 
-def _raw_stations() -> list[dict]:
+def _raw_stations(bbox: dict) -> list[dict]:
+    params = {
+        "neLat": bbox["neLat"],
+        "neLng": bbox["neLng"],
+        "swLat": bbox["swLat"],
+        "swLng": bbox["swLng"],
+    }
     with httpx.Client(timeout=30) as client:
-        resp = client.get(API_URL, params=API_PARAMS, headers=API_HEADERS)
+        resp = client.get(API_URL, params=params, headers=API_HEADERS)
         resp.raise_for_status()
     data = resp.json()
     if isinstance(data, list):
@@ -48,54 +51,98 @@ def _raw_stations() -> list[dict]:
     return []
 
 
-def fetch_and_normalise() -> tuple[list[dict], list[dict]]:
-    """Returns (price_rows, no_price_stations)."""
-    stations = _raw_stations()
+def _extract_price(prices: dict, keys: list[str]) -> tuple[float | None, object]:
+    """Return (price, updated_raw) for the first matching key."""
+    for key in keys:
+        if key not in prices:
+            continue
+        val = prices[key]
+        if isinstance(val, (int, float)):
+            return float(val), None
+        if isinstance(val, dict):
+            amt = val.get("amount") or val.get("price") or val.get("value")
+            ts = val.get("updated") or val.get("lastUpdated") or val.get("date")
+            if amt is not None:
+                return float(amt), ts
+    return None, None
+
+
+def _normalise(stations: list[dict], target_towns: list[str]) -> tuple[list[dict], list[dict]]:
     price_rows: list[dict] = []
     no_price_stations: list[dict] = []
 
     for station in stations:
-        if not station_matches_target(station):
+        if not station_matches_region(station, target_towns):
             continue
 
-        prices = station.get("prices", {})
+        prices = station.get("prices", {}) or {}
         name = station.get("name", "Unknown")
         brand = station.get("brand", "")
         town = extract_town(station)
         address = station.get("address", "")
 
-        price = None
-        updated_dt = None
+        diesel_price, diesel_ts = _extract_price(prices, DIESEL_KEYS)
+        premium_price, premium_ts = _extract_price(prices, PREMIUM_DIESEL_KEYS)
 
-        if isinstance(prices, dict):
-            for key in DIESEL_KEYS + PREMIUM_DIESEL_KEYS:
-                if key not in prices:
-                    continue
-                val = prices[key]
-                if isinstance(val, (int, float)):
-                    price = float(val)
-                elif isinstance(val, dict):
-                    amt = val.get("amount") or val.get("price") or val.get("value")
-                    if amt is not None:
-                        price = float(amt)
-                    ts_raw = val.get("updated") or val.get("lastUpdated") or val.get("date")
-                    updated_dt = parse_updated(ts_raw)
-                if price is not None:
-                    break
-
-        if price is not None:
+        if diesel_price is not None:
+            updated_dt = parse_updated(diesel_ts)
             price_rows.append({
-                "name": name,
-                "brand": brand,
-                "town": town,
-                "fuel_type": "Diesel",
-                "price": price,
-                "updated_dt": updated_dt,
-                "stale": is_stale(updated_dt),
+                "name": name, "brand": brand, "town": town,
+                "fuel_type": "Diesel", "price": diesel_price,
+                "updated_dt": updated_dt, "stale": is_stale(updated_dt),
             })
-        else:
+
+        if premium_price is not None:
+            updated_dt = parse_updated(premium_ts)
+            price_rows.append({
+                "name": name, "brand": brand, "town": town,
+                "fuel_type": "Premium Diesel", "price": premium_price,
+                "updated_dt": updated_dt, "stale": is_stale(updated_dt),
+            })
+
+        if diesel_price is None and premium_price is None:
             no_price_stations.append({
                 "name": name, "brand": brand, "town": town, "address": address,
             })
 
     return price_rows, no_price_stations
+
+
+def fetch_all_regions() -> dict:
+    """
+    Fetch all regions in one run. Returns:
+    {
+        region_key: {
+            "label": str,
+            "route_start": str,
+            "route_end": str,
+            "route_order": list[str],
+            "price_rows": list[dict],
+            "no_price_stations": list[dict],
+        }
+    }
+    """
+    results = {}
+    region_keys = list(REGIONS.keys())
+    for i, region_key in enumerate(region_keys):
+        region_cfg = REGIONS[region_key]
+        if i > 0:
+            time.sleep(1)
+        stations = _raw_stations(region_cfg["bbox"])
+        price_rows, no_price_stations = _normalise(stations, region_cfg["target_towns"])
+        results[region_key] = {
+            "label": region_cfg["label"],
+            "route_start": region_cfg["route_start"],
+            "route_end": region_cfg["route_end"],
+            "route_order": region_cfg["route_order"],
+            "price_rows": price_rows,
+            "no_price_stations": no_price_stations,
+        }
+    return results
+
+
+def fetch_and_normalise() -> tuple[list[dict], list[dict]]:
+    """Legacy single-region interface (Riverland). Kept for backward compat."""
+    all_data = fetch_all_regions()
+    r = all_data["riverland"]
+    return r["price_rows"], r["no_price_stations"]

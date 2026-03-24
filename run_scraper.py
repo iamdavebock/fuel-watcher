@@ -92,17 +92,22 @@ def main() -> None:
     scraped_at = now_adelaide()
 
     try:
-        price_rows, no_price_stations = source.fetch_and_normalise()
+        regions_data = source.fetch_all_regions()
 
-        price_rows.sort(key=lambda r: (r["fuel_type"], route_index(r["town"]), r["price"]))
-        no_price_stations.sort(key=lambda s: (route_index(s["town"]), s["name"]))
+        for region_key, region in regions_data.items():
+            region["price_rows"].sort(
+                key=lambda r: (r["fuel_type"], route_index(r["town"], region["route_order"]), r["price"])
+            )
+            region["no_price_stations"].sort(
+                key=lambda s: (route_index(s["town"], region["route_order"]), s["name"])
+            )
+            print(
+                f"  {region_key}: {len(region['price_rows'])} price rows, "
+                f"{len(region['no_price_stations'])} no-price",
+                file=sys.stderr,
+            )
 
-        print(
-            f"Price rows: {len(price_rows)}, No-price stations: {len(no_price_stations)}",
-            file=sys.stderr,
-        )
-
-        html = render_html(price_rows, no_price_stations, scraped_at, source.DISPLAY_NAME)
+        html = render_html(regions_data, scraped_at, source.DISPLAY_NAME)
         OUTPUT_FILE.parent.mkdir(exist_ok=True)
         OUTPUT_FILE.write_text(html, encoding="utf-8")
 
@@ -115,7 +120,6 @@ def main() -> None:
 
     except Exception as exc:
         print(f"ERROR ({source.SOURCE_NAME}): {exc}", file=sys.stderr)
-        # Only write error page if there's no existing output (avoids overwriting good data)
         if not OUTPUT_FILE.exists():
             error_html = render_error_html(str(exc), scraped_at)
             OUTPUT_FILE.parent.mkdir(exist_ok=True)
