@@ -178,7 +178,8 @@ def render_html(
     </header>
     <main>{main_content}</main>
     <footer>
-      <div>fuel.davebock.au &middot; Prices sourced from community reports. Verify at the bowser.</div>
+      <div>Prices sourced from community reports. Verify at the bowser.</div>
+      <div style="margin-top:0.4rem">Powered by <strong>Ember</strong> &middot; Built by <a href="https://davebock.au" style="color:var(--teal);text-decoration:none">Dave Bock</a></div>
     </footer>
   </div>
   <script>
