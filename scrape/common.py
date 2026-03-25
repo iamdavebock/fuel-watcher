@@ -98,6 +98,30 @@ REGIONS: dict[str, dict] = {
             "mt gambier", "mount gambier",
         ],
     },
+    "eyre": {
+        "label": "Eyre Peninsula",
+        "route_start": "Port Wakefield",
+        "route_end": "Ceduna",
+        "bbox": [
+            {"neLat": "-31.80", "neLng": "138.30", "swLat": "-34.90", "swLng": "136.00"},
+            {"neLat": "-31.80", "neLng": "136.00", "swLat": "-34.90", "swLng": "133.40"},
+        ],
+        "target_towns": [
+            "port wakefield", "port pirie", "port augusta", "whyalla",
+            "iron knob", "kimba", "cowell", "cleve", "arno bay",
+            "port neil", "port neill", "tumby bay", "port lincoln",
+            "coffin bay", "cummins", "lock", "wudinna", "kyancutta",
+            "minnipa", "streaky bay", "smoky bay", "ceduna",
+        ],
+        "route_order": [
+            "port wakefield", "port pirie", "port augusta",
+            "whyalla", "iron knob", "kimba",
+            "cowell", "cleve", "arno bay", "port neil", "port neill",
+            "tumby bay", "port lincoln", "coffin bay",
+            "cummins", "lock", "wudinna", "kyancutta",
+            "minnipa", "streaky bay", "smoky bay", "ceduna",
+        ],
+    },
 }
 
 # Backward-compat aliases (point at Riverland)

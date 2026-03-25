@@ -128,8 +128,22 @@ def fetch_all_regions() -> dict:
         region_cfg = REGIONS[region_key]
         if i > 0:
             time.sleep(1)
-        stations = _raw_stations(region_cfg["bbox"])
-        price_rows, no_price_stations = _normalise(stations, region_cfg["target_towns"])
+        # Support single bbox dict or list of bbox dicts (for large regions)
+        bboxes = region_cfg["bbox"] if isinstance(region_cfg["bbox"], list) else [region_cfg["bbox"]]
+        stations: list[dict] = []
+        for j, bbox in enumerate(bboxes):
+            if j > 0:
+                time.sleep(1)
+            stations.extend(_raw_stations(bbox))
+        # Deduplicate by station name+address in case bboxes overlap
+        seen: set[str] = set()
+        unique: list[dict] = []
+        for s in stations:
+            key = f"{s.get('name','')}|{s.get('address','')}"
+            if key not in seen:
+                seen.add(key)
+                unique.append(s)
+        price_rows, no_price_stations = _normalise(unique, region_cfg["target_towns"])
         results[region_key] = {
             "label": region_cfg["label"],
             "route_start": region_cfg["route_start"],
