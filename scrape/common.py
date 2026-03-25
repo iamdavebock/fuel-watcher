@@ -152,10 +152,35 @@ def station_matches_target(station: dict) -> bool:
     return station_matches_region(station, TARGET_TOWNS)
 
 
+# Prefix → canonical name. A suburb that *starts with* the prefix gets collapsed.
+# Order matters — longer/more-specific prefixes first.
+_TOWN_CANONICAL: list[tuple[str, str]] = [
+    ("port augusta", "Port Augusta"),
+    ("whyalla",      "Whyalla"),
+    ("port pirie",   "Port Pirie"),
+    ("port lincoln", "Port Lincoln"),
+    ("mount gambier", "Mt Gambier"),
+    ("mt gambier",   "Mt Gambier"),
+    ("mount barker", "Mt Barker"),
+    ("mt barker",    "Mt Barker"),
+    ("port neil",    "Port Neill"),   # catches both "Port Neil" and "Port Neill"
+    ("murray bridge","Murray Bridge"),
+]
+
+
+def canonicalize_town(town: str) -> str:
+    """Collapse suburb variants (e.g. 'Port Augusta West') to a single canonical name."""
+    t = town.lower().strip()
+    for prefix, canonical in _TOWN_CANONICAL:
+        if t == prefix or t.startswith(prefix + " "):
+            return canonical
+    return town
+
+
 def extract_town(station: dict) -> str:
     suburb = station.get("suburb", "").strip()
     if suburb:
-        return suburb.title()
+        return canonicalize_town(suburb.title())
     address = station.get("address", "")
     parts = address.split(",")
     if len(parts) >= 2:
