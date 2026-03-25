@@ -122,6 +122,35 @@ REGIONS: dict[str, dict] = {
             "minnipa", "streaky bay", "smoky bay", "ceduna",
         ],
     },
+    "midnorth": {
+        "label": "Mid North & Flinders",
+        "route_start": "Tarlee",
+        "route_end": "Arkaroola",
+        "bbox": [
+            {"neLat": "-32.00", "neLng": "139.50", "swLat": "-34.30", "swLng": "137.80"},
+            {"neLat": "-29.50", "neLng": "139.50", "swLat": "-32.00", "swLng": "137.80"},
+        ],
+        "target_towns": [
+            "tarlee", "auburn", "watervale", "sevenhill", "clare", "mintaro",
+            "riverton", "saddleworth", "eudunda", "robertstown", "burra",
+            "jamestown", "laura", "gladstone", "crystal brook",
+            "orroroo", "peterborough", "carrieton",
+            "melrose", "wilmington", "quorn",
+            "hawker", "parachilna", "blinman",
+            "leigh creek", "copley", "lyndhurst", "marree", "arkaroola",
+            "wilpena", "rawnsley",
+        ],
+        "route_order": [
+            "tarlee", "auburn", "watervale", "sevenhill", "clare", "mintaro",
+            "riverton", "saddleworth", "eudunda", "robertstown", "burra",
+            "jamestown", "laura", "gladstone", "crystal brook",
+            "orroroo", "peterborough", "carrieton",
+            "melrose", "wilmington", "quorn",
+            "hawker", "parachilna", "blinman",
+            "leigh creek", "copley", "lyndhurst", "marree", "arkaroola",
+            "wilpena", "rawnsley",
+        ],
+    },
 }
 
 # Backward-compat aliases (point at Riverland)
