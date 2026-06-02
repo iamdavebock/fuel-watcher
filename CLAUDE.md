@@ -128,6 +128,8 @@ Use `/skill-name` to invoke. Skills compress multi-step procedures into a single
 | `/deploy` | Delegate to DevOps agent |
 | `/security-audit` | Delegate to Security agent |
 | `/build-site` | Generate + deploy a static website (ui-ux-pro-max + Astro + Vercel) |
+| `/extract-skill` | Reverse-engineer a reusable skill from the current conversation |
+| `/insights` | Analyse AI OS usage patterns — what's working, friction points, quick wins |
 
 ### Extended Skills Library
 
