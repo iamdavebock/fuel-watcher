@@ -5,13 +5,10 @@
       "label": "Claude Code — fuel-watcher",
       "type": "shell",
       "command": "ember-session attach fuel-watcher",
-      "runOptions": {
-        "runOn": "folderOpen"
-      },
       "presentation": {
-        "reveal": "silent",
+        "reveal": "always",
         "panel": "dedicated",
-        "focus": false,
+        "focus": true,
         "clear": false
       },
       "problemMatcher": []

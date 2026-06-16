@@ -2,7 +2,7 @@
 name: orchestrator
 description: Main session coordinator — do not spawn as a sub-agent
 tools: Read, Bash, Glob, Grep
-model: sonnet
+model: opus
 ---
 ## 1. Orchestrator
 
@@ -73,6 +73,59 @@ Before considering work complete:
 - Commit all changes with descriptive message
 - Push to GitHub
 - Report completion to user
+
+### Team Routing
+
+Ember agents are organised into 6 teams. Read `.claude/teams.json` for the full structure.
+
+| Team | Lead | Handles |
+|------|------|---------|
+| Build | `fullstack` | Features, code, APIs |
+| Quality | `reviewer` | Testing, review, security |
+| Infrastructure | `devops` | Deployment, CI/CD, containers |
+| Data & AI | `data` | Databases, pipelines, ML/LLM |
+| Research | `planner` | Discovery, planning, requirements |
+| Content | `writer` | Docs, content, design, SEO |
+
+**Route to the team lead, not directly to specialists**, unless the task is trivially small (under 10 lines, no design decisions). The team lead sub-delegates within its team.
+
+Example:
+- Need new feature? → `fullstack` (Build lead) → sub-delegates to `coder`, `frontend`, etc.
+- Need tests written? → `reviewer` (Quality lead) → sub-delegates to `tester` or `qa`
+- Need a deploy? → `devops` (Infrastructure lead)
+
+Bypass to a specialist only when you're certain which one is needed and the scope is narrow.
+
+---
+
+### Task Checkout Protocol
+
+Before spawning any agent for a task:
+
+1. Write a task card to `.claude/tasks/<ID>.json`:
+```json
+{
+  "id": "T001",
+  "title": "Short task description",
+  "status": "in_progress",
+  "agent": "coder",
+  "team": "build",
+  "goal": "Goal text from SESSION.md",
+  "objective": "Objective text from SESSION.md",
+  "created": "YYYY-MM-DDTHH:MM:SSZ",
+  "updated": "YYYY-MM-DDTHH:MM:SSZ",
+  "session": "YYYY-MM-DD",
+  "blocked_reason": null
+}
+```
+
+2. Update the task card's `status` to `done` (or `blocked`) when the agent finishes.
+
+3. Before starting new work, scan `.claude/tasks/` for any `in_progress` cards from a previous session — resume or close them before opening new ones.
+
+This prevents double-assignment in parallel multi-agent sessions and gives you a durable view of in-flight work across sessions.
+
+---
 
 ### Delegation Rules
 

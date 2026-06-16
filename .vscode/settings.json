@@ -6,10 +6,14 @@
       "args": ["-c", "ember-session attach fuel-watcher"],
       "icon": "flame",
       "color": "terminal.ansiMagenta"
+    },
+    "bash": {
+      "path": "bash",
+      "icon": "terminal"
     }
   },
   "terminal.integrated.defaultLocation": "editor",
   "terminal.integrated.persistentSessionReviveProcess": "never",
   "remote.SSH.serverPickScope": "workspace",
-  "task.allowAutomaticTasks": "on"
+  "task.allowAutomaticTasks": "off"
 }
